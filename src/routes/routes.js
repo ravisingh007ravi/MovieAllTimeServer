@@ -19,7 +19,7 @@ router.get('/getAllUserData', getAllUserData)
 // Shopkeeper API's
 router.post('/CreateShopkeeper', upload.single(), CreateShopkeeper)
 
-
+// Not found API's
 router.all('/*', (req, res) => {
     return res.status(400).send({ status: false, msg: 'Invalid Url' })
 })
