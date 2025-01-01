@@ -1,22 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
-const router = require('./routes/routes');
-require('dotenv').config();
+const routes = require('./routes/routes.js');
 
 const app = express();
-
 app.use(express.json());
-app.use(cors());
 
-const portId = process.env.PORT || 5000;
+const MongoDbURl = 'mongodb+srv://kashishgaba225:j9p8n7JWNuxgZt1t@cluster0.7bvgg.mongodb.net/MoviesDataBase';
+const port = 5000 || process.env.PORT
 
-mongoose.connect(process.env.MongooseDB)
-    .then(() => console.log('MongoDB connected'))
-    .catch((err) => console.log('MongoDB connection error:', err));
+mongoose.connect(MongoDbURl)
+    .then(() => { console.log("MongoDB is connected") })
+    .catch((error) => { console.log(error) })
 
-app.use('/', router);
+app.use('/', routes);
 
-app.listen(portId, () => {
-    console.log(`Server is running on port ${portId}`);
-});
+app.listen(port, () => { console.log(`Example app listening on port ${port}`); })
