@@ -4,9 +4,14 @@ exports.createUser = async (req, res) => {
     try {
         const data = req.body;
 
-        const { name, email, password } = data;
+        const { name, email, password,title } = data;
 
         const checkEmail = await userModel.findOne({ email: email });
+
+        const validTitles = ['Mr', 'Miss', 'Other'];
+        if (!title || !validTitles.includes(title)) {
+            return res.status(400).send({ status: false, msg: "Enter a valid title (Mr, Miss, Other)" });
+        }
 
         if (checkEmail) return res.status(400).send({ status: false, msg: "Email already exists" })
 
@@ -19,6 +24,10 @@ exports.createUser = async (req, res) => {
         if (!password) return res.status(400).send({ status: false, msg: "Password is Required" })
         if (!validPassword(password)) return res.status(400).send({ status: false, msg: "Enter a valid Password" })
 
+        const randomOtp = Math.floor(1000 + Math.random() * 9000);
+        data.otp = randomOtp;
+        data.role = 'user';
+
         const userDB = await userModel.create(data);
         res.send({ status: true, msg: "User created successfully", data: userDB })
     }
@@ -27,7 +36,7 @@ exports.createUser = async (req, res) => {
 
 exports.getAllUserData = async (req, res) => {
     try {
-        const data = await userModel.find();
+        const data = await userModel.find({"isDeleted": false}).select({ name: 1, email: 1, role: 1 }).sort({ createdAt: -1 });
         return res.status(200).send({ status: true, data: data });
     }
     catch (e) { return res.status(500).send({ status: false, msg: e.message }) }
