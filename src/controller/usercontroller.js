@@ -3,15 +3,16 @@ const { validName, validEmail, validPassword } = require('../Validation/AllValid
 exports.createUser = async (req, res) => {
     try {
         const data = req.body;
-
+        const profileImg = req.file;
+        
         const { name, email, password,title } = data;
 
         const checkEmail = await userModel.findOne({ email: email });
 
         const validTitles = ['Mr', 'Miss', 'Other'];
-        if (!title || !validTitles.includes(title)) {
-            return res.status(400).send({ status: false, msg: "Enter a valid title (Mr, Miss, Other)" });
-        }
+        if (!title || !validTitles.includes(title)) 
+        return res.status(400).send({ status: false, msg: "Enter a valid title (Mr, Miss, Other)" });
+        
 
         if (checkEmail) return res.status(400).send({ status: false, msg: "Email already exists" })
 
