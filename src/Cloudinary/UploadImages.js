@@ -1,20 +1,24 @@
 const cloudinary = require('cloudinary').v2;
-require('dotenv').config()
+require('dotenv').config();
 
-cloudinary.config({
-    cloud_name: process.env.Cloudname,
-    api_key: process.env.APIKEY,
-    api_secret: process.env.APISecrect
-});
 
-exports.userProfileImg = async(img) => {
 
-    const uploadResult = await cloudinary.uploader.upload(img)
-        .catch((error) => {
-            console.log(error);
-        });
+exports.ImgUrl = async (img) => {
 
-    const url = uploadResult.secure_url;
+    cloudinary.config({
+        cloud_name: process.env.Cloudname,
+        api_key: process.env.ApiKey,
+        api_secret: process.env.APISecrect
+    });
 
-    return url;
+    try {
+        const uploadResult = await cloudinary.uploader.upload(img)
+            .catch((error) => {
+                console.log(error);
+            });
+        return uploadResult
+    }
+    catch (e) {
+        console.log(e)
+    }
 }
