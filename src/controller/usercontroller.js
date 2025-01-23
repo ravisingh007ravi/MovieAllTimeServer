@@ -84,6 +84,9 @@ exports.userLogIn = async (req, res) => {
         const checkEmail = await userModel.findOne({ email: email });
         if (!checkEmail) return res.status(200).send({ status: false, msg: "User not found" });
 
+        if ((checkEmail.isAccountActive) == false) return res.status(200).send({ status: false, msg: "Your Account is Blocked" });
+        if ((checkEmail.isVerify) == false) return res.status(200).send({ status: false, msg: "pls Verify OTP" });
+
         const checkPassword = await bcrypt.compare(password, checkEmail.password);
         if (!checkPassword) return res.status(200).send({ status: false, msg: "Wrong Password" });
 
