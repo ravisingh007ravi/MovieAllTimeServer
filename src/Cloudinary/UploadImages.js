@@ -1,7 +1,6 @@
 const cloudinary = require('cloudinary').v2;
+const sharp = require('sharp');
 require('dotenv').config();
-
-
 
 exports.ImgUrl = async (img) => {
 
@@ -12,13 +11,18 @@ exports.ImgUrl = async (img) => {
     });
 
     try {
-        const uploadResult = await cloudinary.uploader.upload(img)
-            .catch((error) => {
-                console.log(error);
-            });
-        return uploadResult
-    }
-    catch (e) {
-        console.log(e)
+        const optimizedBuffer = await sharp(img)
+            .resize(1080, 720, { fit: 'inside', withoutEnlargement: true })
+            .jpeg({ quality: 80, mozjpeg: true }).toBuffer();
+
+        const uploadResult = await cloudinary.uploader.upload(
+            `data:image/jpeg;base64,${optimizedBuffer.toString('base64')}`,
+            { resource_type: 'auto', quality: 'auto' });
+
+
+        return uploadResult;
+    } catch (error) {
+        console.error('Error during image optimization or upload:', error);
+        throw error;
     }
 }

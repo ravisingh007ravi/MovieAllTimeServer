@@ -22,3 +22,20 @@ exports.validUserData = (req, res, next) => {
     }
     catch (error) { res.status(500).send({ status: false, message: error.message }); }
 }
+
+
+exports.validUserLogInData = (req, res, next) => {
+    try {
+        const data = req.body;
+        const { email, password } = data;
+
+        if (!email) return res.status(422).send({ status: false, msg: "Email is required" });
+        if (!validEmail(email)) return res.status(422).send({ status: false, msg: "Enter a valid email" });
+
+        if (!password) return res.status(422).send({ status: false, msg: "Password is required" });
+        if (!validPassword(password)) return res.status(422).send({ status: false, msg: "Enter a valid password" });
+
+        next()
+    }
+    catch (error) { res.status(500).send({ status: false, message: error.message }); }
+}

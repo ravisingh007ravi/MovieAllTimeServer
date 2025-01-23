@@ -56,14 +56,16 @@ exports.userOTPVerify = async (req, res) => {
     try {
         const userid = req.params.id;
         const { otp } = req.body;
-    
+
+        if (!otp) return res.status(200).send({ status: true, msg: "pls Provide OTP" });
+
         const userDB = await userModel.findById({ _id: userid });
 
-        if(!userDB) return res.status(200).send({ status: true, msg: "User not found" });
-       
-        if(!((userDB.otp)==otp)) return res.status(200).send({ status: true, msg: "Wrong otp" });
-        
-        await userModel.findOneAndUpdate({ _id: userid }, { $set: { isVerify: true } }, { new: true });
+        if (!userDB) return res.status(200).send({ status: true, msg: "User not found" });
+
+        if (!((userDB.otp) == otp)) return res.status(200).send({ status: true, msg: "Wrong otp" });
+
+        await userModel.findByIdAndUpdate({ _id: userid }, { $set: { isVerify: true } }, { new: true });
         res.status(200).send({ status: true, msg: "User Verify successfully" });
 
     }
@@ -71,3 +73,16 @@ exports.userOTPVerify = async (req, res) => {
         res.status(500).send({ status: false, message: error.message });
     }
 };
+
+exports.userLogIn = async (req, res) => {
+
+    try { 
+
+        const {email, password} = req.body;
+        console.log(email, password)
+    }
+
+    catch (error) {
+        res.status(500).send({ status: false, message: error.message });
+    }
+}
