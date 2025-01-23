@@ -1,6 +1,7 @@
 const userModel = require("../Models/userModel.js")
 const { ImgUrl } = require('../Cloudinary/UploadImages.js');
 const { verifyOtp } = require('../Mail/sendMail.js');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 
@@ -76,10 +77,19 @@ exports.userOTPVerify = async (req, res) => {
 
 exports.userLogIn = async (req, res) => {
 
-    try { 
+    try {
 
-        const {email, password} = req.body;
-        console.log(email, password)
+        const { email, password } = req.body;
+
+        const checkEmail = await userModel.findOne({ email: email });
+        if (!checkEmail) return res.status(200).send({ status: false, msg: "User not found" });
+
+        const checkPassword = await bcrypt.compare(password, checkEmail.password);
+        if (!checkPassword) return res.status(200).send({ status: false, msg: "Wrong Password" });
+
+        const userToken = jwt.sign({ UserId: checkEmail._id }, process.env.UserTokenKey, { expiresIn: '12h' })
+
+        res.status(200).send({ status: true, msg: "successfully Created Token", UserToken: userToken, UserId: checkEmail._id });
     }
 
     catch (error) {
