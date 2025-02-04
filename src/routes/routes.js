@@ -7,7 +7,7 @@ const { validUserData, validUserLogInData } = require('../Middleware/userValidat
 const upload = multer({ storage: multer.diskStorage({}) });
 
 //User API's
-router.post('/createUser', upload.single('profileImg'), validUserData, createUser);
+router.post('/createUser', upload.single(),validUserData, createUser);
 router.post('/userOTPVerify/:id', userOTPVerify);
 router.post('/userLogIn', upload.single(),validUserLogInData, userLogIn);
 

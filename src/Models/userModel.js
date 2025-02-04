@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     profileImg: { type: String, required: false, trim: true },
-    title: { type: String, enum: ['Mr', 'Miss','Other'], required: true, trim: true },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true, trim: true },
@@ -15,4 +14,4 @@ const userSchema = new mongoose.Schema({
     { timestamps: true }
 )
 
-module.exports = mongoose.model('user', userSchema); 
+module.exports = mongoose.model('userDB', userSchema); 

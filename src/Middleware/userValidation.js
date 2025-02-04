@@ -3,11 +3,7 @@ const { validName, validEmail, validPassword } = require('../Validation/AllValid
 exports.validUserData = (req, res, next) => {
     try {
         const data = req.body;
-        const { name, email, password, title } = data;
-
-        const validTitles = ['Mr', 'Miss', 'Other'];
-        if (!title || !validTitles.includes(title))
-        return res.status(422).send({ status: false, msg: "Enter a valid title (Mr, Miss, Other)" });
+        const { name, email, password } = data;
 
         if (!name) return res.status(422).send({ status: false, msg: "Name is required" });
         if (!validName(name)) return res.status(422).send({ status: false, msg: "Enter a valid name" });

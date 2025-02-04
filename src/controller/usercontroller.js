@@ -10,12 +10,7 @@ exports.createUser = async (req, res) => {
         const data = req.body;
         const img = req.file;
 
-        const { name, email, password, title } = data;
-
-        const titleValid = ['Mr', 'Miss', 'Other'];
-        if (!title || !titleValid.includes(title)) {
-            return res.status(422).send({ status: false, msg: "Enter a valid title (Mr, Miss, Other)" });
-        }
+        const { name, email, password } = data;
 
         const randonOtp = Math.floor(1000 + Math.random() * 9000);
 
