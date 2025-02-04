@@ -6,49 +6,49 @@ const bcrypt = require('bcrypt');
 
 
 exports.createUser = async (req, res) => {
-    // try {
-    //     const data = req.body;
-    //     const img = req.file;
+    try {
+        const data = req.body;
+        const img = req.file;
 
-    //     const { name, email, password } = data;
+        const { name, email, password } = data;
 
-    //     const randonOtp = Math.floor(1000 + Math.random() * 9000);
+        const randonOtp = Math.floor(1000 + Math.random() * 9000);
 
-    //     const checkEmail = await userModel.findOneAndUpdate({ email: email }, { $set: { otp: randonOtp } }, { new: true });
+        const checkEmail = await userModel.findOneAndUpdate({ email: email }, { $set: { otp: randonOtp } }, { new: true });
 
-    //     if (checkEmail) {
-    //         if ((checkEmail.isAccountActive) == false) return res.status(200).send({ status: false, msg: "Your Account is Blocked" });
-    //         if ((checkEmail.isVerify) == true) return res.status(200).send({ status: false, msg: "Your Account is Verify pls LogIn" });
+        if (checkEmail) {
+            if ((checkEmail.isAccountActive) == false) return res.status(200).send({ status: false, msg: "Your Account is Blocked" });
+            if ((checkEmail.isVerify) == true) return res.status(200).send({ status: false, msg: "Your Account is Verify pls LogIn" });
 
-    //         verifyOtp(name, email, randonOtp);
-    //         return res.status(200).send({ status: true, msg: "otp send successfully", id: checkEmail._id });
-    //     }
+            verifyOtp(name, email, randonOtp);
+            return res.status(200).send({ status: true, msg: "otp send successfully", id: checkEmail._id });
+        }
 
-    //     if (img) {
-    //         const urlPath = img.path;
-    //         const urlResult = await ImgUrl(urlPath);
-    //         data.profileImg = urlResult.secure_url;
-    //     }
+        if (img) {
+            const urlPath = img.path;
+            const urlResult = await ImgUrl(urlPath);
+            data.profileImg = urlResult.secure_url;
+        }
 
-    //     const bcryptPass = await bcrypt.hash(password, 10);
-    //     data.password = bcryptPass;
+        const bcryptPass = await bcrypt.hash(password, 10);
+        data.password = bcryptPass;
 
-    //     data.otp = randonOtp;
-    //     data.role = 'user';
-    //     verifyOtp(name, email, randonOtp);
-    //     const userDB = await userModel.create(data);
+        data.otp = randonOtp;
+        data.role = 'user';
+        verifyOtp(name, email, randonOtp);
+        const userDB = await userModel.create(data);
 
-    //     const DB = {
-    //         profileImg: userDB.profileImg,
-    //         title: userDB.title,
-    //         name: userDB.name,
-    //         email: userDB.email,
-    //     }
+        const DB = {
+            profileImg: userDB.profileImg,
+            title: userDB.title,
+            name: userDB.name,
+            email: userDB.email,
+        }
 
-    //     res.status(201).send({ status: true, msg: "User created successfully", data: DB, id: userDB._id });
-    // } catch (error) {
-    //     res.status(500).send({ status: false, message: error.message });
-    // }
+        res.status(201).send({ status: true, msg: "User created successfully", data: DB, id: userDB._id });
+    } catch (error) {
+        res.status(500).send({ status: false, message: error.message });
+    }
 };
 
 
