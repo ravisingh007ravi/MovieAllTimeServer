@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
-const { createUser, userOTPVerify, userLogIn } = require('../controller/userController');
+const { createUser, userOTPVerify, userLogIn } = require('../controller/userController.js');
 const { validUserData, validUserLogInData } = require('../Middleware/userValidation.js');
 
 const upload = multer({ storage: multer.diskStorage({}) });
