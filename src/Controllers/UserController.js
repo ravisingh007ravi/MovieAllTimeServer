@@ -9,47 +9,58 @@ exports.createUser = async (req, res) => {
     try {
         const data = req.body;
         const img = req.file;
-
+       
         const { name, email, password } = data;
 
-        const randonOtp = Math.floor(1000 + Math.random() * 9000);
+        const randomOtp = Math.floor(1000 + Math.random() * 9000);
 
-        const checkEmail = await userModel.findOneAndUpdate({ email: email }, { $set: { otp: randonOtp } }, { new: true });
+        let checkEmail = await userModel.findOne({ email: email });
 
         if (checkEmail) {
-            if ((checkEmail.isAccountActive) == false) return res.status(200).send({ status: false, msg: "Your Account is Blocked" });
-            if ((checkEmail.isVerify) == true) return res.status(200).send({ status: false, msg: "Your Account is Verify pls LogIn" });
+            if (!checkEmail.isAccountActive) {
+                return res.status(403).send({ status: false, msg: "Your Account is Blocked" });
+            }
+            if (checkEmail.isVerify) {
+                return res.status(200).send({ status: false, msg: "Your Account is Verified. Please Log In" });
+            }
 
-            verifyOtp(name, email, randonOtp);
-            return res.status(200).send({ status: true, msg: "otp send successfully", id: checkEmail._id });
+            checkEmail.otp = randomOtp;
+            await checkEmail.save();
+
+            verifyOtp(name, email, randomOtp);
+            return res.status(200).send({ status: true, msg: "OTP sent successfully", id: checkEmail._id });
         }
 
         if (img) {
-            const urlPath = img.path;
-            const urlResult = await ImgUrl(urlPath);
+            const urlResult = await ImgUrl(img.path);
             data.profileImg = urlResult.secure_url;
         }
 
-        const bcryptPass = await bcrypt.hash(password, 10);
-        data.password = bcryptPass;
-
-        data.otp = randonOtp;
-        data.role = 'user';
-        verifyOtp(name, email, randonOtp);
-        const userDB = await userModel.create(data);
-
-        const DB = {
-            profileImg: userDB.profileImg,
-            title: userDB.title,
-            name: userDB.name,
-            email: userDB.email,
+        if (password) {
+            data.password = await bcrypt.hash(password, 10);
         }
 
-        res.status(201).send({ status: true, msg: "User created successfully", data: DB, id: userDB._id });
+        data.otp = randomOtp;
+        data.role = "user";
+
+        verifyOtp(name, email, randomOtp);
+        const userDB = await userModel.create(data);
+
+        res.status(201).send({
+            status: true,
+            msg: "User created successfully",
+            data: {
+                profileImg: userDB.profileImg,
+                name: userDB.name,
+                email: userDB.email
+            },
+            id: userDB._id
+        });
     } catch (error) {
         res.status(500).send({ status: false, message: error.message });
     }
 };
+
 
 
 exports.userOTPVerify = async (req, res) => {
@@ -67,6 +78,29 @@ exports.userOTPVerify = async (req, res) => {
 
         await userModel.findByIdAndUpdate({ _id: userid }, { $set: { isVerify: true } }, { new: true });
         res.status(200).send({ status: true, msg: "User Verify successfully" });
+
+    }
+    catch (error) {
+        res.status(500).send({ status: false, message: error.message });
+    }
+};
+
+exports.resendOtp = async (req, res) => {
+    try {
+        const userid = req.params.id;
+
+        const randomOtp = Math.floor(1000 + Math.random() * 9000);
+
+        let checkEmail = await userModel.findByIdAndUpdate({ _id: userid }, { $set: { otp: randomOtp } }, { new: true });
+
+        if (checkEmail) {
+
+            checkEmail.otp = randomOtp;
+            await checkEmail.save();
+
+            verifyOtp((checkEmail.name), email, randomOtp);
+            return res.status(200).send({ status: true, msg: "OTP sent successfully", id: checkEmail._id });
+        }
 
     }
     catch (error) {

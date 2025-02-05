@@ -2,13 +2,14 @@ const cloudinary = require('cloudinary').v2;
 const sharp = require('sharp');
 require('dotenv').config();
 
-exports.ImgUrl = async (img) => {
 
-    cloudinary.config({
-        cloud_name: process.env.Cloudname,
-        api_key: process.env.ApiKey,
-        api_secret: process.env.APISecrect
-    });
+cloudinary.config({
+    cloud_name: process.env.Cloudname,
+    api_key: process.env.ApiKey,
+    api_secret: process.env.APISecrect
+});
+
+exports.ImgUrl = async (img) => {
 
     try {
         const optimizedBuffer = await sharp(img)
