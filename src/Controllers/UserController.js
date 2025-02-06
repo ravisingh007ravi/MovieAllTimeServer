@@ -3,6 +3,7 @@ const { ImgUrl } = require('../Cloudinary/UploadImages.js');
 const { verifyOtp } = require('../Mail/sendMail.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { use } = require("../routes/routes.js");
 
 
 exports.createUser = async (req, res) => {
@@ -28,7 +29,7 @@ exports.createUser = async (req, res) => {
             await checkEmail.save();
 
             verifyOtp(name, email, randomOtp);
-            return res.status(200).send({ status: true, msg: "OTP sent successfully", id: checkEmail._id });
+            return res.status(200).send({ status: true, msg: "OTP sent successfully",email: checkEmail.email, id: checkEmail._id });
         }
 
         if (img) {
@@ -47,13 +48,7 @@ exports.createUser = async (req, res) => {
         const userDB = await userModel.create(data);
 
         res.status(201).send({
-            status: true,
-            msg: "User created successfully",
-            data: {
-                profileImg: userDB.profileImg,
-                name: userDB.name,
-                email: userDB.email
-            },
+            status: true,msg: "User created successfully",profileImg: userDB.profileImg,name: userDB.name,email: userDB.email,
             id: userDB._id
         });
     } catch (error) {
@@ -61,20 +56,18 @@ exports.createUser = async (req, res) => {
     }
 };
 
-
-
 exports.userOTPVerify = async (req, res) => {
     try {
         const userid = req.params.id;
         const { otp } = req.body;
 
-        if (!otp) return res.status(200).send({ status: true, msg: "pls Provide OTP" });
+        if (!otp) return res.status(400).send({ status: true, msg: "pls Provide OTP" });
 
         const userDB = await userModel.findById({ _id: userid });
 
-        if (!userDB) return res.status(200).send({ status: true, msg: "User not found" });
+        if (!userDB) return res.status(400).send({ status: true, msg: "User not found" });
 
-        if (!((userDB.otp) == otp)) return res.status(200).send({ status: true, msg: "Wrong otp" });
+        if (!((userDB.otp) == otp)) return res.status(400).send({ status: true, msg: "Wrong otp" });
 
         await userModel.findByIdAndUpdate({ _id: userid }, { $set: { isVerify: true } }, { new: true });
         res.status(200).send({ status: true, msg: "User Verify successfully" });
@@ -85,7 +78,7 @@ exports.userOTPVerify = async (req, res) => {
     }
 };
 
-exports.resendOtp = async (req, res) => {
+exports.reSendOTP = async (req, res) => {
     try {
         const userid = req.params.id;
 
@@ -94,11 +87,10 @@ exports.resendOtp = async (req, res) => {
         let checkEmail = await userModel.findByIdAndUpdate({ _id: userid }, { $set: { otp: randomOtp } }, { new: true });
 
         if (checkEmail) {
-
             checkEmail.otp = randomOtp;
             await checkEmail.save();
 
-            verifyOtp((checkEmail.name), email, randomOtp);
+            verifyOtp((checkEmail.name), (checkEmail.email), randomOtp);
             return res.status(200).send({ status: true, msg: "OTP sent successfully", id: checkEmail._id });
         }
 
