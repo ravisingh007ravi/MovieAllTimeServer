@@ -5,14 +5,14 @@ exports.ValidUserData = (req, res, next) => {
         const data = req.body;
         const { name, email, password } = data;
 
-        if (!name) return res.status(422).send({ status: false, msg: "Name is required" });
-        if (!validName(name)) return res.status(422).send({ status: false, msg: "Enter a valid name" });
+        if (!name) return res.status(400).send({ status: false, msg: "Name is required" });
+        if (!validName(name)) return res.status(400).send({ status: false, msg: "Enter a valid name" });
 
-        if (!email) return res.status(422).send({ status: false, msg: "Email is required" });
-        if (!validEmail(email)) return res.status(422).send({ status: false, msg: "Enter a valid email" });
+        if (!email) return res.status(400).send({ status: false, msg: "Email is required" });
+        if (!validEmail(email)) return res.status(400).send({ status: false, msg: "Enter a valid email" });
 
-        if (!password) return res.status(422).send({ status: false, msg: "Password is required" });
-        if (!validPassword(password)) return res.status(422).send({ status: false, msg: "Enter a valid password" });
+        if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
+        if (!validPassword(password)) return res.status(400).send({ status: false, msg: "Enter a valid password" });
 
         next()
     }

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const movieSchema = new mongoose.Schema({
     profileImg: { type: String, required: false, trim: true },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
@@ -15,4 +15,4 @@ const userSchema = new mongoose.Schema({
     { timestamps: true }
 )
 
-module.exports = mongoose.model('userDB', userSchema); 
+module.exports = mongoose.model('movieDB', movieSchema); 
