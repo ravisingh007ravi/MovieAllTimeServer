@@ -10,19 +10,19 @@ exports.createUser = async (req, res) => {
     try {
         const data = req.body;
         const img = req.file;
-
         const { name, email, password } = data;
-
+        
         const randomOtp = Math.floor(1000 + Math.random() * 9000);
-
+        
         let checkEmail = await userModel.findOne({ email: email });
+      
 
         if (checkEmail) {
             if (!checkEmail.isAccountActive) {
-                return res.status(403).send({ status: false, msg: "Your Account is Blocked" });
+                return res.status(400).send({ status: false, msg: "Your Account is Blocked" });
             }
             if (checkEmail.isVerify) {
-                return res.status(200).send({ status: false, msg: "Your Account is Verified. Please Log In" });
+                return res.status(200).send({ status: false, msg: "Your Account is Verified. Please Log In",isVerify:checkEmail.isVerify });
             }
 
             checkEmail.otp = randomOtp;
@@ -105,6 +105,7 @@ exports.userLogIn = async (req, res) => {
     try {
 
         const { email, password } = req.body;
+        console.log(email,password)
 
         const checkEmail = await userModel.findOne({ email: email });
         if (!checkEmail) return res.status(200).send({ status: false, msg: "User not found" });
